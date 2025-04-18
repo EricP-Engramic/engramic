@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../assets/logo_100.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.11">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.4af4bdda.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.2afb09e1.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -997,7 +997,9 @@
 <span class="normal">129</span>
 <span class="normal">130</span>
 <span class="normal">131</span>
-<span class="normal">132</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RetrieveService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RetrieveService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Service responsible for handling semantic prompt retrieval. It communicates with vector and document databases via plugins and tracks operational metrics for observability.</span>
 
@@ -1027,6 +1029,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="n">Host</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">plugin_manager</span><span class="p">:</span> <span class="n">PluginManager</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">plugin_manager</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vector_db_plugin</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">plugin_manager</span><span class="o">.</span><span class="n">get_plugin</span><span class="p">(</span><span class="s1">&#39;vector_db&#39;</span><span class="p">,</span> <span class="s1">&#39;db&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_plugin</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">plugin_manager</span><span class="o">.</span><span class="n">get_plugin</span><span class="p">(</span><span class="s1">&#39;db&#39;</span><span class="p">,</span> <span class="s1">&#39;document&#39;</span><span class="p">)</span>
@@ -1042,9 +1045,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">Service</span><span class="o">.</span><span class="n">Topic</span><span class="o">.</span><span class="n">SUBMIT_PROMPT</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_submit_prompt</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">Service</span><span class="o">.</span><span class="n">Topic</span><span class="o">.</span><span class="n">INDEX_COMPLETE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_index_complete</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">Service</span><span class="o">.</span><span class="n">Topic</span><span class="o">.</span><span class="n">META_COMPLETE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_meta_complete</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
     <span class="c1"># when called from monitor service</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_submit_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

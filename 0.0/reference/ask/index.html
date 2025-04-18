@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../assets/logo_100.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.11">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.4af4bdda.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.2afb09e1.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -1122,7 +1122,14 @@
 <span class="normal">397</span>
 <span class="normal">398</span>
 <span class="normal">399</span>
-<span class="normal">400</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Ask</span><span class="p">(</span><span class="n">Retrieval</span><span class="p">):</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Ask</span><span class="p">(</span><span class="n">Retrieval</span><span class="p">):</span>
     <span class="k">class</span><span class="w"> </span><span class="nc">Ask</span><span class="p">(</span><span class="n">Retrieval</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ask is a specifc type of retrieval focused on traditional Q&amp;A. It is a single instanc of an ask.</span>
@@ -1362,7 +1369,7 @@
         <span class="n">plugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_analysis_plugin</span>
         <span class="c1"># add prompt engineering here and submit as the full prompt.</span>
         <span class="n">prompt</span> <span class="o">=</span> <span class="n">PromptAnalyzePrompt</span><span class="p">(</span><span class="n">prompt_str</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt</span><span class="o">.</span><span class="n">prompt_str</span><span class="p">,</span> <span class="n">input_data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;meta_list&#39;</span><span class="p">:</span> <span class="n">meta_list</span><span class="p">})</span>
-        <span class="n">structured_response</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;response_length&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">}</span>
+        <span class="n">structured_response</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;response_length&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;user_prompt_type&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">}</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">to_thread</span><span class="p">(</span>
             <span class="n">plugin</span><span class="p">[</span><span class="s1">&#39;func&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">submit</span><span class="p">,</span>
             <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
@@ -1475,8 +1482,15 @@
         <span class="n">ret</span> <span class="o">=</span> <span class="n">fut</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Query Result: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_analysis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="s1">&#39;on_query_index_db failed: prompt_analysis is None and likely failed during an earlier process.&#39;</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span>
+
         <span class="n">retrieve_result</span> <span class="o">=</span> <span class="n">RetrieveResult</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">engram_id_array</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">ret</span><span class="p">),</span> <span class="n">conversation_direction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conversation_direction</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">engram_id_array</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">ret</span><span class="p">),</span>
+            <span class="n">conversation_direction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conversation_direction</span><span class="p">,</span>
+            <span class="n">analysis</span><span class="o">=</span><span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_analysis</span><span class="p">)[</span><span class="s1">&#39;prompt_analysis&#39;</span><span class="p">],</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_analysis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

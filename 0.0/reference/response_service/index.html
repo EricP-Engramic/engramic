@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../assets/logo_100.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.11">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.4af4bdda.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.2afb09e1.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -1121,7 +1121,8 @@ using the retrieval result.</p>
 <span class="normal">230</span>
 <span class="normal">231</span>
 <span class="normal">232</span>
-<span class="normal">233</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResponseService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+<span class="normal">233</span>
+<span class="normal">234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResponseService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ResponseService orchestrates response generation using retrieved engrams,</span>
 <span class="sd">    conversation history, and plugin-based LLM processing. It integrates with</span>
@@ -1170,10 +1171,10 @@ using the retrieval result.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">Service</span><span class="o">.</span><span class="n">Topic</span><span class="o">.</span><span class="n">ACKNOWLEDGE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_acknowledge</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">Service</span><span class="o">.</span><span class="n">Topic</span><span class="o">.</span><span class="n">RETRIEVE_COMPLETE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_retrieve_complete</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">web_socket_manager</span><span class="o">.</span><span class="n">init_async</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">run_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">web_socket_manager</span><span class="o">.</span><span class="n">shutdown</span><span class="p">())</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">web_socket_manager</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">init_async</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_document_plugin</span><span class="p">[</span><span class="s1">&#39;func&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -1267,6 +1268,7 @@ using the retrieval result.</p>
                 <span class="s1">&#39;engram_list&#39;</span><span class="p">:</span> <span class="n">engram_dict_list</span><span class="p">,</span>
                 <span class="s1">&#39;history&#39;</span><span class="p">:</span> <span class="n">history_array</span><span class="p">,</span>
                 <span class="s1">&#39;working_memory&#39;</span><span class="p">:</span> <span class="n">retrieve_result</span><span class="o">.</span><span class="n">conversation_direction</span><span class="p">,</span>
+                <span class="s1">&#39;analysis&#39;</span><span class="p">:</span> <span class="n">retrieve_result</span><span class="o">.</span><span class="n">analysis</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
 
@@ -1291,9 +1293,9 @@ using the retrieval result.</p>
         <span class="k">if</span> <span class="n">plugin</span><span class="p">[</span><span class="s1">&#39;args&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">):</span>
             <span class="n">model</span> <span class="o">=</span> <span class="n">plugin</span><span class="p">[</span><span class="s1">&#39;args&#39;</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span>
 
-        <span class="n">response_inst</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span>
-            <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()),</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;llm_response&#39;</span><span class="p">],</span> <span class="n">retrieve_result</span><span class="p">,</span> <span class="n">prompt</span><span class="o">.</span><span class="n">prompt_str</span><span class="p">,</span> <span class="n">analysis</span><span class="p">,</span> <span class="n">model</span>
-        <span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;llm_response&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;$&#39;</span><span class="p">,</span> <span class="s1">&#39;USD &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;context&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;/context&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="n">response_inst</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()),</span> <span class="n">response</span><span class="p">,</span> <span class="n">retrieve_result</span><span class="p">,</span> <span class="n">prompt</span><span class="o">.</span><span class="n">prompt_str</span><span class="p">,</span> <span class="n">analysis</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">response_inst</span>
 

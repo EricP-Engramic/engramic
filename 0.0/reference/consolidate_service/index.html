@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../assets/logo_100.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.11">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.4af4bdda.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.2afb09e1.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -1204,9 +1204,7 @@ coordinating summarization, engram generation, index generation, and embedding c
 <span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ConsolidateService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ConsolidateService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The ConsolidateService orchestrates the post-processing pipeline for completed observations,</span>
 <span class="sd">    coordinating summarization, engram generation, index generation, and embedding creation.</span>
@@ -1263,9 +1261,10 @@ coordinating summarization, engram generation, index generation, and embedding c
     <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">Service</span><span class="o">.</span><span class="n">Topic</span><span class="o">.</span><span class="n">OBSERVATION_COMPLETE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_observation_complete</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">Service</span><span class="o">.</span><span class="n">Topic</span><span class="o">.</span><span class="n">ACKNOWLEDGE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_acknowledge</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">on_observation_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">__debug__</span><span class="p">:</span>
@@ -1334,7 +1333,6 @@ coordinating summarization, engram generation, index generation, and embedding c
 
         <span class="c1"># Keep references so we can fill them in later</span>
         <span class="k">for</span> <span class="n">engram</span> <span class="ow">in</span> <span class="n">engram_list</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Engram Ready: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">engram</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">engram_builder</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">engram</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">engram_builder</span><span class="p">[</span><span class="n">engram</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">engram</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1346,42 +1344,7 @@ coordinating summarization, engram generation, index generation, and embedding c
 
         <span class="n">indices_future</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_tasks</span><span class="p">(</span><span class="n">index_tasks</span><span class="p">)</span>
 
-        <span class="c1"># Once all indices are generated, generate embeddings</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">on_indices_done</span><span class="p">(</span><span class="n">indices_list_fut</span><span class="p">:</span> <span class="n">Future</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># This is the accumulated result of each gen_indices(...) call</span>
-            <span class="n">indices_list</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">indices_list_fut</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
-            <span class="c1"># indices_list should have a key like &#39;gen_indices&#39; -&gt; list[dict[str, Any]]</span>
-            <span class="n">index_sets</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">indices_list</span><span class="p">[</span><span class="s1">&#39;_gen_indices&#39;</span><span class="p">]</span>
-
-            <span class="c1"># 2) Generate embeddings for each index set</span>
-            <span class="n">embed_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_gen_embeddings</span><span class="p">(</span><span class="n">index_set</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">index_set</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">index_sets</span><span class="p">)]</span>
-
-            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;index_sets </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">index_sets</span><span class="p">))</span>
-            <span class="n">embed_future</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_tasks</span><span class="p">(</span><span class="n">embed_tasks</span><span class="p">)</span>
-
-            <span class="c1"># Once embeddings are generated, then we&#39;re truly done</span>
-            <span class="k">def</span><span class="w"> </span><span class="nf">on_embeddings_done</span><span class="p">(</span><span class="n">embed_fut</span><span class="p">:</span> <span class="n">Future</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">ret</span> <span class="o">=</span> <span class="n">embed_fut</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>  <span class="c1"># ret should have &#39;gen_embeddings&#39; -&gt; list of engram IDs</span>
-                <span class="n">ids</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s1">&#39;_gen_embeddings&#39;</span><span class="p">]</span>  <span class="c1"># which IDs got their embeddings updated</span>
-
-                <span class="c1"># 3) Now that embeddings exist, we can send &quot;ENGRAM_COMPLETE&quot; for each</span>
-                <span class="n">engram_dict</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">for</span> <span class="n">eid</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Done: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">eid</span><span class="p">)</span>
-                    <span class="n">engram_dict</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">engram_builder</span><span class="p">[</span><span class="n">eid</span><span class="p">]))</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">send_message_async</span><span class="p">(</span><span class="n">Service</span><span class="o">.</span><span class="n">Topic</span><span class="o">.</span><span class="n">ENGRAM_COMPLETE</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;engram_array&#39;</span><span class="p">:</span> <span class="n">engram_dict</span><span class="p">})</span>
-
-                <span class="k">if</span> <span class="n">__debug__</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">update_mock_data_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;engram_array&#39;</span><span class="p">:</span> <span class="n">engram_dict</span><span class="p">})</span>
-
-                <span class="k">for</span> <span class="n">eid</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Deleting: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">eid</span><span class="p">)</span>
-                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">engram_builder</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span>
-
-            <span class="n">embed_future</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="n">on_embeddings_done</span><span class="p">)</span>
-
-        <span class="n">indices_future</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="n">on_indices_done</span><span class="p">)</span>
+        <span class="n">indices_future</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_indices_done</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_gen_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">id_in</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">engram</span><span class="p">:</span> <span class="n">Engram</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="n">data_input</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;engram&#39;</span><span class="p">:</span> <span class="n">engram</span><span class="p">}</span>
@@ -1406,9 +1369,21 @@ coordinating summarization, engram generation, index generation, and embedding c
 
         <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">id_in</span><span class="p">,</span> <span class="s1">&#39;indices&#39;</span><span class="p">:</span> <span class="n">response_json</span><span class="p">[</span><span class="s1">&#39;index_text_array&#39;</span><span class="p">]}</span>
 
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_gen_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_and_index_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">process_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;gen_embeddings: indices in </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">id_and_index_dict</span><span class="p">[</span><span class="s1">&#39;indices&#39;</span><span class="p">]))</span>
+    <span class="c1"># Once all indices are generated, generate embeddings</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_indices_done</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices_list_fut</span><span class="p">:</span> <span class="n">Future</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># This is the accumulated result of each gen_indices(...) call</span>
+        <span class="n">indices_list</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">indices_list_fut</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+        <span class="c1"># indices_list should have a key like &#39;gen_indices&#39; -&gt; list[dict[str, Any]]</span>
+        <span class="n">index_sets</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">indices_list</span><span class="p">[</span><span class="s1">&#39;_gen_indices&#39;</span><span class="p">]</span>
 
+        <span class="c1"># 2) Generate embeddings for each index set</span>
+        <span class="n">embed_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_gen_embeddings</span><span class="p">(</span><span class="n">index_set</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">index_set</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">index_sets</span><span class="p">)]</span>
+
+        <span class="n">embed_future</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_tasks</span><span class="p">(</span><span class="n">embed_tasks</span><span class="p">)</span>
+
+        <span class="n">embed_future</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_embeddings_done</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_gen_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_and_index_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">process_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="n">id_and_index_dict</span><span class="p">[</span><span class="s1">&#39;indices&#39;</span><span class="p">]</span>
         <span class="n">engram_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">id_and_index_dict</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
 
@@ -1424,10 +1399,13 @@ coordinating summarization, engram generation, index generation, and embedding c
         <span class="bp">self</span><span class="o">.</span><span class="n">metrics_tracker</span><span class="o">.</span><span class="n">increment</span><span class="p">(</span><span class="n">ConsolidateMetric</span><span class="o">.</span><span class="n">EMBEDDINGS_GENERATED</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">embedding_list</span><span class="p">))</span>
 
         <span class="c1"># Convert raw embeddings to Index objects and attach them</span>
-        <span class="n">index_array</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Index</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">vec</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">embedding_list</span><span class="p">):</span>
-            <span class="n">index</span> <span class="o">=</span> <span class="n">Index</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">vec</span><span class="p">)</span>
-            <span class="n">index_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">index_array</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Index</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">vec</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">embedding_list</span><span class="p">):</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="n">Index</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">vec</span><span class="p">)</span>
+                <span class="n">index_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Exception caught.&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">engram_builder</span><span class="p">[</span><span class="n">engram_id</span><span class="p">]</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">index_array</span>
         <span class="n">serialized_index_array</span> <span class="o">=</span> <span class="p">[</span><span class="n">asdict</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">index_array</span><span class="p">]</span>
@@ -1437,6 +1415,24 @@ coordinating summarization, engram generation, index generation, and embedding c
 
         <span class="c1"># Return the ID so we know which engram was updated</span>
         <span class="k">return</span> <span class="n">engram_id</span>
+
+    <span class="c1"># Once embeddings are generated, then we&#39;re truly done</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_embeddings_done</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embed_fut</span><span class="p">:</span> <span class="n">Future</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">embed_fut</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>  <span class="c1"># ret should have &#39;gen_embeddings&#39; -&gt; list of engram IDs</span>
+
+        <span class="n">ids</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s1">&#39;_gen_embeddings&#39;</span><span class="p">]</span>  <span class="c1"># which IDs got their embeddings updated</span>
+
+        <span class="c1"># 3) Now that embeddings exist, we can send &quot;ENGRAM_COMPLETE&quot; for each</span>
+        <span class="n">engram_dict</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">engram_dict</span> <span class="o">=</span> <span class="p">[</span><span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">engram_builder</span><span class="p">[</span><span class="n">eid</span><span class="p">])</span> <span class="k">for</span> <span class="n">eid</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_message_async</span><span class="p">(</span><span class="n">Service</span><span class="o">.</span><span class="n">Topic</span><span class="o">.</span><span class="n">ENGRAM_COMPLETE</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;engram_array&#39;</span><span class="p">:</span> <span class="n">engram_dict</span><span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">__debug__</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">update_mock_data_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;engram_array&#39;</span><span class="p">:</span> <span class="n">engram_dict</span><span class="p">})</span>
+
+        <span class="k">for</span> <span class="n">eid</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">engram_builder</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ### Acknowledge</span>
