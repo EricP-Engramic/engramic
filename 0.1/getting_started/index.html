@@ -824,8 +824,7 @@
 <summary>3. Install <a href="https://hatch.pypa.io/1.12/install/#command-line-installer_1">Hatch</a></summary>
 <p>We use <strong><a href="https://hatch.pypa.io">Hatch</a></strong> as our Python project manager. It handles all dependencies, Python versioning, testing, versioning, scripts, and virtual environments.</p>
 <p>🔗 <a href="https://hatch.pypa.io/1.12/install/#command-line-installer_1">Hatch Installation</a></p>
-<p>We recommend using <code>pipx</code> as described in the Hatch installation instructions.</p>
-<p>⚠️ You may see a browser download warning when downloading the Hatch installer.</p>
+<p>We recommend installing with <code>pipx</code> as described in the Hatch installation instructions. Restart your terminal if "pipx" isn't found.</p>
 <p>Watch a <a href="https://www.youtube.com/watch?v=aY4lpy9vV0Q&amp;t=372s">video</a> of using Hatch in Engramic.</p>
 </details>
 <details class="note">
@@ -835,16 +834,22 @@
 <li>Navigate to the root of the Engramic project in your terminal.</li>
 <li>
 <p>Run:</p>
-<div class="highlight"><pre><span></span><code>hatch shell
+<div class="highlight"><pre><span></span><code>hatch env create
 </code></pre></div>
+<p>Enter into the default shell ("default" has no name after "shell".)
+<div class="highlight"><pre><span></span><code>hatch shell
+</code></pre></div></p>
 </li>
 </ol>
 <p>This will install all dependencies (should be quick—we work hard to minimize dependencies).</p>
 <ol>
 <li>
-<p>Open the project in VS Code:</p>
+<p>In the terminal, open the project in VS Code:</p>
 <div class="highlight"><pre><span></span><code>code .
 </code></pre></div>
+</li>
+<li>
+<p>On windows, in visual studio code, install the following extensions from Microsoft. WSL. Python Debugger.</p>
 </li>
 </ol>
 </details>
@@ -857,6 +862,10 @@
 <li>Choose the environment that looks like:<br />
 <code>Python X.XX.X ('engramic')</code></li>
 </ol>
+<p>Note: If you aren't sure of the path, you can type the following while in the hatch shell:</p>
+<div class="highlight"><pre><span></span><code>python -c &quot;import sys;print(sys.executable)&quot;
+</code></pre></div>
+<p>If you are stuck, check vs code's WSL extension.</p>
 </details>
 <details class="note">
 <summary>6. Run the Mock Version</summary>
@@ -882,9 +891,10 @@
 <div class="highlight"><pre><span></span><code>    engramic/examples/standard_profile/standard_profile.py
 </code></pre></div>
 <ol>
-<li>
-<p>In <strong>Run and Debug</strong>, select <strong>"Example - Standard"</strong>.</p>
-</li>
+<li>In <strong>Run and Debug</strong>, select <strong>"Example - Standard"</strong>.</li>
+</ol>
+<p><em>Note: this takes some time on first run.</em></p>
+<ol>
 <li>
 <p>For this example, you'll need a <strong>Gemini API key</strong>:</p>
 <ul>
@@ -893,10 +903,10 @@
 </ul>
 </li>
 <li>
-<p>Add a <code>.env</code> file to the root of the project with the following content:</p>
+<p>Add a <code>.env</code> file to the root of the project with the following content (multiple plugin paths coming soon.):</p>
 <div class="highlight"><pre><span></span><code>GEMINI_API_KEY=PUT_YOUR_KEY_HERE_WITH_NO_QUOTES_OR_ANYTHING_ELSE
-ENGRAMIC_PLUGIN_PATHS=/your/absolute/directory/path/engramic/src/engramic/infrastructure/plugins
-LOCAL_STORAGE_ROOT_PATH=/your/absolute/directory/path/engramic/local_storage
+ENGRAMIC_PLUGIN_PATHS=./src/engramic/infrastructure/plugins
+LOCAL_STORAGE_ROOT_PATH=./local_storage
 </code></pre></div>
 <p>Locate this line and change it if you would like to.</p>
 <div class="highlight"><pre><span></span><code><span class="n">retrieve_service</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">Prompt</span><span class="p">(</span><span class="s1">&#39;Briefly tell me about Chamath Palihapitiya.&#39;</span><span class="p">))</span>
