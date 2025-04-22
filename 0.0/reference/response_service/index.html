@@ -724,9 +724,9 @@
               Bases: <code><span title="engramic.infrastructure.system.service.Service">Service</span></code></p>
 
 
-        <p>ResponseService orchestrates response generation using retrieved engrams,
-conversation history, and plugin-based LLM processing. It integrates with
-plugins, websockets, and metrics to generate contextual AI responses.</p>
+        <p>ResponseService orchestrates AI response generation by integrating retrieval
+results, historical context, and prompt engineering. It coordinates plugin-managed
+large language models (LLMs), websockets for streaming, and metrics tracking.</p>
 
 
 <p><span class="doc-section-title">Attributes:</span></p>
@@ -746,7 +746,7 @@ plugins, websockets, and metrics to generate contextual AI responses.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Manages access to LLM and DB plugins.</p>
+                <p>Provides access to LLM and DB plugins.</p>
               </div>
             </td>
           </tr>
@@ -757,7 +757,7 @@ plugins, websockets, and metrics to generate contextual AI responses.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Handles streaming responses.</p>
+                <p>Manages live streaming over websocket.</p>
               </div>
             </td>
           </tr>
@@ -768,7 +768,7 @@ plugins, websockets, and metrics to generate contextual AI responses.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Document DB plugin instance.</p>
+                <p>Document store plugin interface.</p>
               </div>
             </td>
           </tr>
@@ -779,7 +779,7 @@ plugins, websockets, and metrics to generate contextual AI responses.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Repository to load Engram data.</p>
+                <p>Access point for loading engrams.</p>
               </div>
             </td>
           </tr>
@@ -790,7 +790,7 @@ plugins, websockets, and metrics to generate contextual AI responses.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>LLM plugin for main response generation.</p>
+                <p>Plugin for executing the main LLM-based response generation.</p>
               </div>
             </td>
           </tr>
@@ -801,7 +801,7 @@ plugins, websockets, and metrics to generate contextual AI responses.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Placeholder prompt for prompt engineering.</p>
+                <p>Placeholder prompt object for main prompt design.</p>
               </div>
             </td>
           </tr>
@@ -812,7 +812,7 @@ plugins, websockets, and metrics to generate contextual AI responses.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Tracks internal performance metrics.</p>
+                <p>Tracks internal response metrics.</p>
               </div>
             </td>
           </tr>
@@ -833,7 +833,7 @@ plugins, websockets, and metrics to generate contextual AI responses.</p>
               <td><code><span title="engramic.application.response.response_service.ResponseService.start">start</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Subscribe to service topics and initialize websocket manager.</p>
+                  <p>Subscribes to service topics and initializes websocket manager.</p>
                 </div>
               </td>
             </tr>
@@ -841,7 +841,7 @@ plugins, websockets, and metrics to generate contextual AI responses.</p>
               <td><code><span title="engramic.application.response.response_service.ResponseService.stop">stop</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Shutdown websocket manager and stop service.</p>
+                  <p>Shuts down the websocket manager and stops the service.</p>
                 </div>
               </td>
             </tr>
@@ -849,7 +849,7 @@ plugins, websockets, and metrics to generate contextual AI responses.</p>
               <td><code><span title="engramic.application.response.response_service.ResponseService.init_async">init_async</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Establish DB connection via plugin.</p>
+                  <p>Initializes the DB plugin connection asynchronously.</p>
                 </div>
               </td>
             </tr>
@@ -857,32 +857,8 @@ plugins, websockets, and metrics to generate contextual AI responses.</p>
               <td><code><span title="engramic.application.response.response_service.ResponseService.on_retrieve_complete">on_retrieve_complete</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Handle retrieval completion,
-fetch engrams and history, and trigger main prompt.</p>
-                </div>
-              </td>
-            </tr>
-            <tr class="doc-section-item">
-              <td><code><span title="engramic.application.response.response_service.ResponseService.on_fetch_data_complete">on_fetch_data_complete</span></code></td>
-              <td>
-                <div class="doc-md-description">
-                  <p>Callback after data is fetched.</p>
-                </div>
-              </td>
-            </tr>
-            <tr class="doc-section-item">
-              <td><code><span title="engramic.application.response.response_service.ResponseService.on_main_prompt_complete">on_main_prompt_complete</span></code></td>
-              <td>
-                <div class="doc-md-description">
-                  <p>Callback after main prompt completes.</p>
-                </div>
-              </td>
-            </tr>
-            <tr class="doc-section-item">
-              <td><code><span title="engramic.application.response.response_service.ResponseService.on_acknowledge">on_acknowledge</span></code></td>
-              <td>
-                <div class="doc-md-description">
-                  <p>Reset and send metrics status packet.</p>
+                  <p>Triggered when retrieval results are received.
+Initiates engram and history fetch processes.</p>
                 </div>
               </td>
             </tr>
@@ -890,7 +866,7 @@ fetch engrams and history, and trigger main prompt.</p>
               <td><code><span title="engramic.application.response.response_service.ResponseService._fetch_history">_fetch_history</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Fetch history from the database.</p>
+                  <p>Asynchronously fetches historical conversation context.</p>
                 </div>
               </td>
             </tr>
@@ -898,8 +874,16 @@ fetch engrams and history, and trigger main prompt.</p>
               <td><code><span title="engramic.application.response.response_service.ResponseService._fetch_retrieval">_fetch_retrieval</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Fetch engrams
-using the retrieval result.</p>
+                  <p>Loads engrams using retrieve result.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><span title="engramic.application.response.response_service.ResponseService.on_fetch_data_complete">on_fetch_data_complete</span></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Callback fired after both history and engrams are loaded;
+launches the main prompt generation task.</p>
                 </div>
               </td>
             </tr>
@@ -907,13 +891,39 @@ using the retrieval result.</p>
               <td><code><span title="engramic.application.response.response_service.ResponseService.main_prompt">main_prompt</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Run LLM with contextual prompt data and return Response.</p>
+                  <p>Constructs and submits the main prompt to the LLM plugin; formats and returns the response.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><span title="engramic.application.response.response_service.ResponseService.on_main_prompt_complete">on_main_prompt_complete</span></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Callback fired after main prompt response is generated;
+sends result and updates metrics.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><span title="engramic.application.response.response_service.ResponseService.on_acknowledge">on_acknowledge</span></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Sends current metrics snapshot to monitoring topics.</p>
                 </div>
               </td>
             </tr>
       </tbody>
     </table>
 
+
+<details class="notes" open>
+  <summary>Notes</summary>
+  <ul>
+<li>Asynchronous database and model operations are handled via <code>asyncio.to_thread</code>.</li>
+<li>Debug mode transmits intermediate prompt input and final output via websocket topics.</li>
+<li>Metrics are captured throughout the response generation pipeline to monitor performance.</li>
+</ul>
+</details>
 
 
 
@@ -1122,36 +1132,46 @@ using the retrieval result.</p>
 <span class="normal">231</span>
 <span class="normal">232</span>
 <span class="normal">233</span>
-<span class="normal">234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResponseService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResponseService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    ResponseService orchestrates response generation using retrieved engrams,</span>
-<span class="sd">    conversation history, and plugin-based LLM processing. It integrates with</span>
-<span class="sd">    plugins, websockets, and metrics to generate contextual AI responses.</span>
+<span class="sd">    ResponseService orchestrates AI response generation by integrating retrieval</span>
+<span class="sd">    results, historical context, and prompt engineering. It coordinates plugin-managed</span>
+<span class="sd">    large language models (LLMs), websockets for streaming, and metrics tracking.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        plugin_manager (PluginManager): Manages access to LLM and DB plugins.</span>
-<span class="sd">        web_socket_manager (WebsocketManager): Handles streaming responses.</span>
-<span class="sd">        db_document_plugin (dict): Document DB plugin instance.</span>
-<span class="sd">        engram_repository (EngramRepository): Repository to load Engram data.</span>
-<span class="sd">        llm_main (dict): LLM plugin for main response generation.</span>
-<span class="sd">        instructions (Prompt): Placeholder prompt for prompt engineering.</span>
-<span class="sd">        metrics_tracker (MetricsTracker): Tracks internal performance metrics.</span>
+<span class="sd">        plugin_manager (PluginManager): Provides access to LLM and DB plugins.</span>
+<span class="sd">        web_socket_manager (WebsocketManager): Manages live streaming over websocket.</span>
+<span class="sd">        db_document_plugin (dict): Document store plugin interface.</span>
+<span class="sd">        engram_repository (EngramRepository): Access point for loading engrams.</span>
+<span class="sd">        llm_main (dict): Plugin for executing the main LLM-based response generation.</span>
+<span class="sd">        instructions (Prompt): Placeholder prompt object for main prompt design.</span>
+<span class="sd">        metrics_tracker (MetricsTracker): Tracks internal response metrics.</span>
 
 <span class="sd">    Methods:</span>
-<span class="sd">        start(): Subscribe to service topics and initialize websocket manager.</span>
-<span class="sd">        stop(): Shutdown websocket manager and stop service.</span>
-<span class="sd">        init_async(): Establish DB connection via plugin.</span>
-<span class="sd">        on_retrieve_complete(retrieve_result_in): Handle retrieval completion,</span>
-<span class="sd">            fetch engrams and history, and trigger main prompt.</span>
-<span class="sd">        on_fetch_data_complete(fut): Callback after data is fetched.</span>
-<span class="sd">        on_main_prompt_complete(fut): Callback after main prompt completes.</span>
-<span class="sd">        on_acknowledge(message_in): Reset and send metrics status packet.</span>
-<span class="sd">        _fetch_history(): Fetch history from the database.</span>
-<span class="sd">        _fetch_retrieval(prompt_str, analysis, retrieve_result): Fetch engrams</span>
-<span class="sd">            using the retrieval result.</span>
+<span class="sd">        start(): Subscribes to service topics and initializes websocket manager.</span>
+<span class="sd">        stop(): Shuts down the websocket manager and stops the service.</span>
+<span class="sd">        init_async(): Initializes the DB plugin connection asynchronously.</span>
+<span class="sd">        on_retrieve_complete(retrieve_result_in): Triggered when retrieval results are received.</span>
+<span class="sd">            Initiates engram and history fetch processes.</span>
+<span class="sd">        _fetch_history(): Asynchronously fetches historical conversation context.</span>
+<span class="sd">        _fetch_retrieval(prompt_str, analysis, retrieve_result): Loads engrams using retrieve result.</span>
+<span class="sd">        on_fetch_data_complete(fut): Callback fired after both history and engrams are loaded;</span>
+<span class="sd">            launches the main prompt generation task.</span>
 <span class="sd">        main_prompt(prompt_str, analysis, engram_array, retrieve_result, history_array):</span>
-<span class="sd">            Run LLM with contextual prompt data and return Response.</span>
+<span class="sd">            Constructs and submits the main prompt to the LLM plugin; formats and returns the response.</span>
+<span class="sd">        on_main_prompt_complete(fut): Callback fired after main prompt response is generated;</span>
+<span class="sd">            sends result and updates metrics.</span>
+<span class="sd">        on_acknowledge(message_in): Sends current metrics snapshot to monitoring topics.</span>
 
+<span class="sd">    Notes:</span>
+<span class="sd">        - Asynchronous database and model operations are handled via `asyncio.to_thread`.</span>
+<span class="sd">        - Debug mode transmits intermediate prompt input and final output via websocket topics.</span>
+<span class="sd">        - Metrics are captured throughout the response generation pipeline to monitor performance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="n">Host</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

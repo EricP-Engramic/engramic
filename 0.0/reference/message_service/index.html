@@ -722,10 +722,15 @@
               Bases: <code><span title="engramic.infrastructure.system.base_message_service.BaseMessageService">BaseMessageService</span></code></p>
 
 
-        <p>A system-level message handling service that provides runtime profiling capabilities and reports metrics.</p>
-<p>The MessageService listens for system-level control messages, such as those initiating or ending
-profiling sessions, and acknowledgment messages for metrics reporting. It extends BaseMessageService
-to provide core message routing functionality, with additional support for CPU profiling via <code>cProfile</code>.</p>
+        <p>A system-level message handling service that provides runtime CPU profiling and metrics reporting.</p>
+<p>MessageService extends BaseMessageService to handle system-level control messages, enabling
+dynamic profiling using Python's built-in <code>cProfile</code> module and responding to acknowledgment
+messages for metrics tracking. It operates by subscribing to control topics and exposing
+runtime observability features.</p>
+<p>Responsibilities:
+- Handles <code>START_PROFILER</code> and <code>END_PROFILER</code> messages to control a CPU profiler.
+- Responds to <code>ACKNOWLEDGE</code> messages by emitting a status update with performance metrics.
+- Uses the <code>metrics_tracker</code> inherited from BaseMessageService to report accumulated metrics.</p>
 
 
 <p><span class="doc-section-title">Attributes:</span></p>
@@ -745,8 +750,9 @@ to provide core message routing functionality, with additional support for CPU p
             </td>
             <td>
               <div class="doc-md-description">
-                <p>An optional CPU profiler instance used to monitor performance
-during execution. Initialized and controlled via START_PROFILER and END_PROFILER messages.</p>
+                <p>An optional CPU profiler used to capture runtime performance data.
+The profiler is started and stopped in response to specific control messages and saves output
+to a file named 'profile_output.prof'.</p>
               </div>
             </td>
           </tr>
@@ -767,7 +773,7 @@ during execution. Initialized and controlled via START_PROFILER and END_PROFILER
               <td><code><span title="engramic.application.message.message_service.MessageService.init_async">init_async</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Initializes the service asynchronously, resetting any existing profiler instance.</p>
+                  <p>Resets the profiler during asynchronous initialization.</p>
                 </div>
               </td>
             </tr>
@@ -775,7 +781,7 @@ during execution. Initialized and controlled via START_PROFILER and END_PROFILER
               <td><code><span title="engramic.application.message.message_service.MessageService.start">start</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Subscribes to system topics to enable profiler control and metric acknowledgment.</p>
+                  <p>Subscribes to relevant system topics for profiler control and metric acknowledgment.</p>
                 </div>
               </td>
             </tr>
@@ -783,7 +789,7 @@ during execution. Initialized and controlled via START_PROFILER and END_PROFILER
               <td><code><span title="engramic.application.message.message_service.MessageService.stop">stop</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Stops the message service.</p>
+                  <p>Gracefully shuts down the message service.</p>
                 </div>
               </td>
             </tr>
@@ -791,7 +797,7 @@ during execution. Initialized and controlled via START_PROFILER and END_PROFILER
               <td><code><span title="engramic.application.message.message_service.MessageService.start_profiler">start_profiler</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Starts the CPU profiler if not already running.</p>
+                  <p>Initializes and starts the CPU profiler.</p>
                 </div>
               </td>
             </tr>
@@ -799,7 +805,7 @@ during execution. Initialized and controlled via START_PROFILER and END_PROFILER
               <td><code><span title="engramic.application.message.message_service.MessageService.end_profiler">end_profiler</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Stops the CPU profiler and writes the profiling data to a file.</p>
+                  <p>Stops the profiler and dumps results to a profile file.</p>
                 </div>
               </td>
             </tr>
@@ -807,7 +813,7 @@ during execution. Initialized and controlled via START_PROFILER and END_PROFILER
               <td><code><span title="engramic.application.message.message_service.MessageService.on_acknowledge">on_acknowledge</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Sends a status update containing tracked metrics upon acknowledgment.</p>
+                  <p>Sends a metric snapshot and service status in response to ACKNOWLEDGE messages.</p>
                 </div>
               </td>
             </tr>
@@ -884,25 +890,39 @@ during execution. Initialized and controlled via START_PROFILER and END_PROFILER
 <span class="normal">79</span>
 <span class="normal">80</span>
 <span class="normal">81</span>
-<span class="normal">82</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MessageService</span><span class="p">(</span><span class="n">BaseMessageService</span><span class="p">):</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MessageService</span><span class="p">(</span><span class="n">BaseMessageService</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A system-level message handling service that provides runtime profiling capabilities and reports metrics.</span>
+<span class="sd">    A system-level message handling service that provides runtime CPU profiling and metrics reporting.</span>
 
-<span class="sd">    The MessageService listens for system-level control messages, such as those initiating or ending</span>
-<span class="sd">    profiling sessions, and acknowledgment messages for metrics reporting. It extends BaseMessageService</span>
-<span class="sd">    to provide core message routing functionality, with additional support for CPU profiling via `cProfile`.</span>
+<span class="sd">    MessageService extends BaseMessageService to handle system-level control messages, enabling</span>
+<span class="sd">    dynamic profiling using Python&#39;s built-in `cProfile` module and responding to acknowledgment</span>
+<span class="sd">    messages for metrics tracking. It operates by subscribing to control topics and exposing</span>
+<span class="sd">    runtime observability features.</span>
+
+<span class="sd">    Responsibilities:</span>
+<span class="sd">    - Handles `START_PROFILER` and `END_PROFILER` messages to control a CPU profiler.</span>
+<span class="sd">    - Responds to `ACKNOWLEDGE` messages by emitting a status update with performance metrics.</span>
+<span class="sd">    - Uses the `metrics_tracker` inherited from BaseMessageService to report accumulated metrics.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        profiler (cProfile.Profile | None): An optional CPU profiler instance used to monitor performance</span>
-<span class="sd">            during execution. Initialized and controlled via START_PROFILER and END_PROFILER messages.</span>
+<span class="sd">        profiler (cProfile.Profile | None): An optional CPU profiler used to capture runtime performance data.</span>
+<span class="sd">            The profiler is started and stopped in response to specific control messages and saves output</span>
+<span class="sd">            to a file named &#39;profile_output.prof&#39;.</span>
 
 <span class="sd">    Methods:</span>
-<span class="sd">        init_async(): Initializes the service asynchronously, resetting any existing profiler instance.</span>
-<span class="sd">        start(): Subscribes to system topics to enable profiler control and metric acknowledgment.</span>
-<span class="sd">        stop(): Stops the message service.</span>
-<span class="sd">        start_profiler(data): Starts the CPU profiler if not already running.</span>
-<span class="sd">        end_profiler(data): Stops the CPU profiler and writes the profiling data to a file.</span>
-<span class="sd">        on_acknowledge(message_in): Sends a status update containing tracked metrics upon acknowledgment.</span>
+<span class="sd">        init_async(): Resets the profiler during asynchronous initialization.</span>
+<span class="sd">        start(): Subscribes to relevant system topics for profiler control and metric acknowledgment.</span>
+<span class="sd">        stop(): Gracefully shuts down the message service.</span>
+<span class="sd">        start_profiler(data): Initializes and starts the CPU profiler.</span>
+<span class="sd">        end_profiler(data): Stops the profiler and dumps results to a profile file.</span>
+<span class="sd">        on_acknowledge(message_in): Sends a metric snapshot and service status in response to ACKNOWLEDGE messages.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="n">Host</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

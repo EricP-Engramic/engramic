@@ -726,7 +726,11 @@
               Bases: <code><span title="engramic.infrastructure.system.service.Service">Service</span></code></p>
 
 
-        <p>Service responsible for handling semantic prompt retrieval. It communicates with vector and document databases via plugins and tracks operational metrics for observability.</p>
+        <p>Manages semantic prompt retrieval and indexing by coordinating between vector/document databases,
+tracking metrics, and responding to system events.</p>
+<p>This service is responsible for receiving prompt submissions, retrieving relevant information using
+vector similarity, and handling the indexing and metadata enrichment process. It interfaces with
+plugin-managed databases and provides observability through metrics tracking.</p>
 
 
 <p><span class="doc-section-title">Attributes:</span></p>
@@ -746,7 +750,7 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Plugin manager to access database and vector services.</p>
+                <p>Access point for system plugins, including vector and document DBs.</p>
               </div>
             </td>
           </tr>
@@ -757,7 +761,7 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Plugin for interacting with the vector database.</p>
+                <p>Plugin used for vector database operations (e.g., semantic search).</p>
               </div>
             </td>
           </tr>
@@ -768,7 +772,7 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Plugin for document database operations.</p>
+                <p>Plugin for interacting with the document database.</p>
               </div>
             </td>
           </tr>
@@ -779,7 +783,7 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Tracks various retrieval-related metrics.</p>
+                <p>Collects and resets retrieval-related metrics for monitoring.</p>
               </div>
             </td>
           </tr>
@@ -790,7 +794,7 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Handles persistence and loading of Meta objects.</p>
+                <p>Handles Meta object persistence and transformation.</p>
               </div>
             </td>
           </tr>
@@ -811,7 +815,7 @@
               <td><code><span title="engramic.application.retrieve.retrieve_service.RetrieveService.init_async">init_async</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Initializes the database connection.</p>
+                  <p>Initializes database connections and plugin setup asynchronously.</p>
                 </div>
               </td>
             </tr>
@@ -819,7 +823,7 @@
               <td><code><span title="engramic.application.retrieve.retrieve_service.RetrieveService.start">start</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Subscribes to service topics for prompt submission, indexing, and metadata completion.</p>
+                  <p>Subscribes to system topics for prompt processing and indexing lifecycle.</p>
                 </div>
               </td>
             </tr>
@@ -827,7 +831,7 @@
               <td><code><span title="engramic.application.retrieve.retrieve_service.RetrieveService.stop">stop</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Stops the service and cleans up subscriptions.</p>
+                  <p>Cleans up the service and halts processing.</p>
                 </div>
               </td>
             </tr>
@@ -835,7 +839,7 @@
               <td><code><span title="engramic.application.retrieve.retrieve_service.RetrieveService.submit">submit</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Initiates the retrieval process for a given prompt and logs metrics.</p>
+                  <p>Prompt): Begins the retrieval process and logs submission metrics.</p>
                 </div>
               </td>
             </tr>
@@ -843,7 +847,7 @@
               <td><code><span title="engramic.application.retrieve.retrieve_service.RetrieveService.on_submit_prompt">on_submit_prompt</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Handles incoming prompt strings from messaging, wraps them in a Prompt object, and triggers retrieval.</p>
+                  <p>str): Converts raw prompt string to a Prompt object and submits for processing.</p>
                 </div>
               </td>
             </tr>
@@ -851,7 +855,15 @@
               <td><code><span title="engramic.application.retrieve.retrieve_service.RetrieveService.on_index_complete">on_index_complete</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Callback that handles completed indices and submits them to the vector DB.</p>
+                  <p>dict): Converts index payload into Index objects and queues for insertion.</p>
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><span title="engramic.application.retrieve.retrieve_service.RetrieveService._insert_engram_vector">_insert_engram_vector</span></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>list[Index], engram_id: str): Asynchronously inserts semantic indices into vector DB.</p>
                 </div>
               </td>
             </tr>
@@ -859,7 +871,7 @@
               <td><code><span title="engramic.application.retrieve.retrieve_service.RetrieveService.on_meta_complete">on_meta_complete</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Callback for completed metadata, converts and submits to vector DB.</p>
+                  <p>dict): Loads and inserts metadata summary into the vector DB.</p>
                 </div>
               </td>
             </tr>
@@ -867,15 +879,7 @@
               <td><code><span title="engramic.application.retrieve.retrieve_service.RetrieveService.insert_meta_vector">insert_meta_vector</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Asynchronously inserts metadata summaries into the vector DB.</p>
-                </div>
-              </td>
-            </tr>
-            <tr class="doc-section-item">
-              <td><code><span title="engramic.application.retrieve.retrieve_service.RetrieveService.insert_engram_vector">insert_engram_vector</span></code></td>
-              <td>
-                <div class="doc-md-description">
-                  <p>Asynchronously inserts semantic indices into the vector DB.</p>
+                  <p>Meta): Runs metadata vector insertion in a background thread.</p>
                 </div>
               </td>
             </tr>
@@ -883,7 +887,7 @@
               <td><code><span title="engramic.application.retrieve.retrieve_service.RetrieveService.on_acknowledge">on_acknowledge</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Handles status reporting and resets the current metric tracker.</p>
+                  <p>str): Emits service metrics to the status channel and resets the tracker.</p>
                 </div>
               </td>
             </tr>
@@ -999,32 +1003,42 @@
 <span class="normal">131</span>
 <span class="normal">132</span>
 <span class="normal">133</span>
-<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RetrieveService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RetrieveService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Service responsible for handling semantic prompt retrieval. It communicates with vector and document databases via plugins and tracks operational metrics for observability.</span>
+<span class="sd">    Manages semantic prompt retrieval and indexing by coordinating between vector/document databases,</span>
+<span class="sd">    tracking metrics, and responding to system events.</span>
+
+<span class="sd">    This service is responsible for receiving prompt submissions, retrieving relevant information using</span>
+<span class="sd">    vector similarity, and handling the indexing and metadata enrichment process. It interfaces with</span>
+<span class="sd">    plugin-managed databases and provides observability through metrics tracking.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        plugin_manager (PluginManager): Plugin manager to access database and vector services.</span>
-<span class="sd">        vector_db_plugin (dict): Plugin for interacting with the vector database.</span>
-<span class="sd">        db_plugin (dict): Plugin for document database operations.</span>
-<span class="sd">        metrics_tracker (MetricsTracker): Tracks various retrieval-related metrics.</span>
-<span class="sd">        meta_repository (MetaRepository): Handles persistence and loading of Meta objects.</span>
+<span class="sd">        plugin_manager (PluginManager): Access point for system plugins, including vector and document DBs.</span>
+<span class="sd">        vector_db_plugin (dict): Plugin used for vector database operations (e.g., semantic search).</span>
+<span class="sd">        db_plugin (dict): Plugin for interacting with the document database.</span>
+<span class="sd">        metrics_tracker (MetricsTracker): Collects and resets retrieval-related metrics for monitoring.</span>
+<span class="sd">        meta_repository (MetaRepository): Handles Meta object persistence and transformation.</span>
 
 <span class="sd">    Methods:</span>
-<span class="sd">        init_async(): Initializes the database connection.</span>
-<span class="sd">        start(): Subscribes to service topics for prompt submission, indexing, and metadata completion.</span>
-<span class="sd">        stop(): Stops the service and cleans up subscriptions.</span>
+<span class="sd">        init_async(): Initializes database connections and plugin setup asynchronously.</span>
+<span class="sd">        start(): Subscribes to system topics for prompt processing and indexing lifecycle.</span>
+<span class="sd">        stop(): Cleans up the service and halts processing.</span>
 
-<span class="sd">        submit(prompt): Initiates the retrieval process for a given prompt and logs metrics.</span>
-<span class="sd">        on_submit_prompt(data): Handles incoming prompt strings from messaging, wraps them in a Prompt object, and triggers retrieval.</span>
+<span class="sd">        submit(prompt: Prompt): Begins the retrieval process and logs submission metrics.</span>
+<span class="sd">        on_submit_prompt(data: str): Converts raw prompt string to a Prompt object and submits for processing.</span>
 
-<span class="sd">        on_index_complete(index_message): Callback that handles completed indices and submits them to the vector DB.</span>
-<span class="sd">        on_meta_complete(meta_dict): Callback for completed metadata, converts and submits to vector DB.</span>
+<span class="sd">        on_index_complete(index_message: dict): Converts index payload into Index objects and queues for insertion.</span>
+<span class="sd">        _insert_engram_vector(index_list: list[Index], engram_id: str): Asynchronously inserts semantic indices into vector DB.</span>
 
-<span class="sd">        insert_meta_vector(meta): Asynchronously inserts metadata summaries into the vector DB.</span>
-<span class="sd">        insert_engram_vector(index_list, engram_id): Asynchronously inserts semantic indices into the vector DB.</span>
+<span class="sd">        on_meta_complete(meta_dict: dict): Loads and inserts metadata summary into the vector DB.</span>
+<span class="sd">        insert_meta_vector(meta: Meta): Runs metadata vector insertion in a background thread.</span>
 
-<span class="sd">        on_acknowledge(message_in): Handles status reporting and resets the current metric tracker.</span>
+<span class="sd">        on_acknowledge(message_in: str): Emits service metrics to the status channel and resets the tracker.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="n">Host</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

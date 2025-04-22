@@ -724,10 +724,10 @@
               Bases: <code><span title="engramic.infrastructure.system.service.Service">Service</span></code></p>
 
 
-        <p>A service responsible for persisting various data artifacts generated during the Engramic runtime process.</p>
-<p>The StorageService listens to multiple system topics and asynchronously saves different types of data,
-including observations, engrams, metadata, and history responses. It utilizes plugin-based repositories
-for storage and maintains metrics on saved entities for monitoring and reporting.</p>
+        <p>A service responsible for persisting runtime data artifacts within the Engramic system.</p>
+<p>StorageService listens for various system events and saves corresponding data—including observations,
+engrams, metadata, and prompt histories—via plugin-based repositories. It also tracks metrics for each
+type of saved entity to facilitate performance monitoring and operational insights.</p>
 
 
 <p><span class="doc-section-title">Attributes:</span></p>
@@ -747,7 +747,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Manages system plugins including the database plugin.</p>
+                <p>Provides access to system plugins, including database integrations.</p>
               </div>
             </td>
           </tr>
@@ -757,7 +757,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The database document plugin used by repositories.</p>
+                <p>Plugin used by repositories for data persistence.</p>
               </div>
             </td>
           </tr>
@@ -768,7 +768,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Handles persistence of history data.</p>
+                <p>Manages saving of prompt/response history data.</p>
               </div>
             </td>
           </tr>
@@ -779,7 +779,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Handles persistence of observations.</p>
+                <p>Handles saving of Observation entities.</p>
               </div>
             </td>
           </tr>
@@ -790,7 +790,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Handles persistence of engrams.</p>
+                <p>Handles saving of Engram entities.</p>
               </div>
             </td>
           </tr>
@@ -801,7 +801,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Handles persistence of metadata.</p>
+                <p>Handles saving of Meta configuration entities.</p>
               </div>
             </td>
           </tr>
@@ -812,7 +812,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Tracks and reports storage metrics for each saved entity type.</p>
+                <p>Tracks counts of saved items for metric reporting.</p>
               </div>
             </td>
           </tr>
@@ -833,7 +833,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
               <td><code><span title="engramic.application.storage.storage_service.StorageService.start">start</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Subscribes to message topics and prepares the service for operation.</p>
+                  <p>Registers the service to relevant message topics and begins operation.</p>
                 </div>
               </td>
             </tr>
@@ -841,7 +841,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
               <td><code><span title="engramic.application.storage.storage_service.StorageService.init_async">init_async</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Initializes database connections asynchronously.</p>
+                  <p>Connects to the database plugin asynchronously before full service startup.</p>
                 </div>
               </td>
             </tr>
@@ -849,7 +849,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
               <td><code><span title="engramic.application.storage.storage_service.StorageService.on_engram_complete">on_engram_complete</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Callback to handle completed engrams and trigger storage.</p>
+                  <p>Callback for storing completed engram batches.</p>
                 </div>
               </td>
             </tr>
@@ -857,7 +857,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
               <td><code><span title="engramic.application.storage.storage_service.StorageService.on_observation_complete">on_observation_complete</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Callback to handle completed observations and trigger storage.</p>
+                  <p>Callback for storing completed observations.</p>
                 </div>
               </td>
             </tr>
@@ -865,7 +865,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
               <td><code><span title="engramic.application.storage.storage_service.StorageService.on_prompt_complete">on_prompt_complete</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Callback to handle completed prompt responses and trigger history storage.</p>
+                  <p>Callback for storing completed prompt/response history.</p>
                 </div>
               </td>
             </tr>
@@ -873,7 +873,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
               <td><code><span title="engramic.application.storage.storage_service.StorageService.on_meta_complete">on_meta_complete</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Callback to handle completed meta information and trigger storage.</p>
+                  <p>Callback for storing finalized meta configuration.</p>
                 </div>
               </td>
             </tr>
@@ -881,7 +881,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
               <td><code><span title="engramic.application.storage.storage_service.StorageService.save_observation">save_observation</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Asynchronously saves an observation and updates metrics.</p>
+                  <p>Coroutine to persist observations and update metrics.</p>
                 </div>
               </td>
             </tr>
@@ -889,7 +889,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
               <td><code><span title="engramic.application.storage.storage_service.StorageService.save_history">save_history</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Asynchronously saves a history response and updates metrics.</p>
+                  <p>Coroutine to persist prompt/response history and update metrics.</p>
                 </div>
               </td>
             </tr>
@@ -897,7 +897,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
               <td><code><span title="engramic.application.storage.storage_service.StorageService.save_engram">save_engram</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Asynchronously saves an engram and updates metrics.</p>
+                  <p>Coroutine to persist engram data and update metrics.</p>
                 </div>
               </td>
             </tr>
@@ -905,7 +905,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
               <td><code><span title="engramic.application.storage.storage_service.StorageService.save_meta">save_meta</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Asynchronously saves meta information and updates metrics.</p>
+                  <p>Coroutine to persist metadata and update metrics.</p>
                 </div>
               </td>
             </tr>
@@ -913,7 +913,7 @@ for storage and maintains metrics on saved entities for monitoring and reporting
               <td><code><span title="engramic.application.storage.storage_service.StorageService.on_acknowledge">on_acknowledge</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Collects metrics and sends a status update on acknowledgment.</p>
+                  <p>Collects current metrics and publishes service status.</p>
                 </div>
               </td>
             </tr>
@@ -1027,33 +1027,33 @@ for storage and maintains metrics on saved entities for monitoring and reporting
 <span class="normal">129</span>
 <span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">StorageService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A service responsible for persisting various data artifacts generated during the Engramic runtime process.</span>
+<span class="sd">    A service responsible for persisting runtime data artifacts within the Engramic system.</span>
 
-<span class="sd">    The StorageService listens to multiple system topics and asynchronously saves different types of data,</span>
-<span class="sd">    including observations, engrams, metadata, and history responses. It utilizes plugin-based repositories</span>
-<span class="sd">    for storage and maintains metrics on saved entities for monitoring and reporting.</span>
+<span class="sd">    StorageService listens for various system events and saves corresponding data—including observations,</span>
+<span class="sd">    engrams, metadata, and prompt histories—via plugin-based repositories. It also tracks metrics for each</span>
+<span class="sd">    type of saved entity to facilitate performance monitoring and operational insights.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        plugin_manager (PluginManager): Manages system plugins including the database plugin.</span>
-<span class="sd">        db_document_plugin: The database document plugin used by repositories.</span>
-<span class="sd">        history_repository (HistoryRepository): Handles persistence of history data.</span>
-<span class="sd">        observation_repository (ObservationRepository): Handles persistence of observations.</span>
-<span class="sd">        engram_repository (EngramRepository): Handles persistence of engrams.</span>
-<span class="sd">        meta_repository (MetaRepository): Handles persistence of metadata.</span>
-<span class="sd">        metrics_tracker (MetricsTracker): Tracks and reports storage metrics for each saved entity type.</span>
+<span class="sd">        plugin_manager (PluginManager): Provides access to system plugins, including database integrations.</span>
+<span class="sd">        db_document_plugin: Plugin used by repositories for data persistence.</span>
+<span class="sd">        history_repository (HistoryRepository): Manages saving of prompt/response history data.</span>
+<span class="sd">        observation_repository (ObservationRepository): Handles saving of Observation entities.</span>
+<span class="sd">        engram_repository (EngramRepository): Handles saving of Engram entities.</span>
+<span class="sd">        meta_repository (MetaRepository): Handles saving of Meta configuration entities.</span>
+<span class="sd">        metrics_tracker (MetricsTracker): Tracks counts of saved items for metric reporting.</span>
 
 <span class="sd">    Methods:</span>
-<span class="sd">        start(): Subscribes to message topics and prepares the service for operation.</span>
-<span class="sd">        init_async(): Initializes database connections asynchronously.</span>
-<span class="sd">        on_engram_complete(engram_dict): Callback to handle completed engrams and trigger storage.</span>
-<span class="sd">        on_observation_complete(response): Callback to handle completed observations and trigger storage.</span>
-<span class="sd">        on_prompt_complete(response_dict): Callback to handle completed prompt responses and trigger history storage.</span>
-<span class="sd">        on_meta_complete(meta_dict): Callback to handle completed meta information and trigger storage.</span>
-<span class="sd">        save_observation(response): Asynchronously saves an observation and updates metrics.</span>
-<span class="sd">        save_history(response): Asynchronously saves a history response and updates metrics.</span>
-<span class="sd">        save_engram(engram): Asynchronously saves an engram and updates metrics.</span>
-<span class="sd">        save_meta(meta): Asynchronously saves meta information and updates metrics.</span>
-<span class="sd">        on_acknowledge(message_in): Collects metrics and sends a status update on acknowledgment.</span>
+<span class="sd">        start(): Registers the service to relevant message topics and begins operation.</span>
+<span class="sd">        init_async(): Connects to the database plugin asynchronously before full service startup.</span>
+<span class="sd">        on_engram_complete(engram_dict): Callback for storing completed engram batches.</span>
+<span class="sd">        on_observation_complete(response): Callback for storing completed observations.</span>
+<span class="sd">        on_prompt_complete(response_dict): Callback for storing completed prompt/response history.</span>
+<span class="sd">        on_meta_complete(meta_dict): Callback for storing finalized meta configuration.</span>
+<span class="sd">        save_observation(response): Coroutine to persist observations and update metrics.</span>
+<span class="sd">        save_history(response): Coroutine to persist prompt/response history and update metrics.</span>
+<span class="sd">        save_engram(engram): Coroutine to persist engram data and update metrics.</span>
+<span class="sd">        save_meta(meta): Coroutine to persist metadata and update metrics.</span>
+<span class="sd">        on_acknowledge(message_in): Collects current metrics and publishes service status.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="n">Host</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

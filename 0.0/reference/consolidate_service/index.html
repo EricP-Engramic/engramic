@@ -886,10 +886,10 @@ coordinating summarization, engram generation, index generation, and embedding c
               </td>
             </tr>
             <tr class="doc-section-item">
-              <td><code><span title="engramic.application.consolidate.consolidate_service.ConsolidateService.generate_summary">generate_summary</span></code></td>
+              <td><code><span title="engramic.application.consolidate.consolidate_service.ConsolidateService._ generate_summary">_ generate_summary</span></code></td>
               <td>
                 <div class="doc-md-description">
-                  <p>Creates a summary of the observation content.</p>
+                  <p>Creates a summary of the observation content. (not implemented yet)</p>
                 </div>
               </td>
             </tr>
@@ -1203,8 +1203,7 @@ coordinating summarization, engram generation, index generation, and embedding c
 <span class="normal">274</span>
 <span class="normal">275</span>
 <span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ConsolidateService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+<span class="normal">277</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ConsolidateService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The ConsolidateService orchestrates the post-processing pipeline for completed observations,</span>
 <span class="sd">    coordinating summarization, engram generation, index generation, and embedding creation.</span>
@@ -1236,7 +1235,7 @@ coordinating summarization, engram generation, index generation, and embedding c
 <span class="sd">        start(): Subscribes the service to message topics.</span>
 <span class="sd">        stop(): Stops the service and clears subscriptions.</span>
 <span class="sd">        on_observation_complete(observation_dict): Handles post-processing when an observation completes.</span>
-<span class="sd">        generate_summary(observation): Creates a summary of the observation content.</span>
+<span class="sd">        _ generate_summary(observation): Creates a summary of the observation content. (not implemented yet)</span>
 <span class="sd">        on_summary(summary_fut): Callback after summary generation completes.</span>
 <span class="sd">        generate_summary_embeddings(meta): Generates and attaches embeddings for a summary.</span>
 <span class="sd">        generate_engrams(observation): Constructs engrams from observation data.</span>
@@ -1255,7 +1254,6 @@ coordinating summarization, engram generation, index generation, and embedding c
         <span class="bp">self</span><span class="o">.</span><span class="n">db_document</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_manager</span><span class="o">.</span><span class="n">get_plugin</span><span class="p">(</span><span class="s1">&#39;db&#39;</span><span class="p">,</span> <span class="s1">&#39;document&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">observation_repository</span> <span class="o">=</span> <span class="n">ObservationRepository</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_document</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">engram_builder</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Engram</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">index_builder</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metrics_tracker</span><span class="p">:</span> <span class="n">MetricsTracker</span><span class="p">[</span><span class="n">ConsolidateMetric</span><span class="p">]</span> <span class="o">=</span> <span class="n">MetricsTracker</span><span class="p">[</span><span class="n">ConsolidateMetric</span><span class="p">]()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
